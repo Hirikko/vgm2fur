@@ -1,74 +1,196 @@
 # vgm2fur
 
-A Python CLI application that allows to convert VGM files to Furnace modules.
+Aplicativo CLI desenvolvido em Python que permite converter arquivos VGM em módulos do Furnace Tracker (`.fur`).
 
-> [!WARNING] 
-> As of April 2026, this version is abandoned. Please do not expect support. Sorry.
+> [!WARNING] **Versão original descontinuada:** a partir de abril de 2026, o desenvolvedor original declarou esta versão abandonada e sem previsão de suporte.
 
-## Installation
+> Este repositório é um fork independente, mantido com o objetivo de dar continuidade ao projeto e expandir suas funcionalidades.
 
-**Prerequisites**:
-- Python 3.10 or later
+## Instalação
 
-**Installation steps**:
-- Download wheel file from the latest release;
-- Install the wheel file with `pip` or `pipx`.
+**Pré-requisitos:**
 
-Wheel file is installed by running a command in OS shell:
+- Python 3.10 ou superior.
+
+**Etapas de instalação:**
+
+1. Baixe o arquivo wheel da versão desejada na seção de Releases.
+2. Instale o arquivo utilizando `pip` ou `pipx`.
+
+Instalação com `pip`:
+
+bash
+
 ```
-pip install <path-to-wheel-file>
-```
-or 
-```
-pipx install <path-to-wheel-file>
+pip install <caminho-para-o-arquivo-wheel>
 ```
 
-After installation you'll be able to call `vgm2fur` from your OS shell.
+Ou com `pipx`:
 
-To uninstall, run a command:
+bash
+
+```
+pipx install <caminho-para-o-arquivo-wheel>
+```
+
+Após a instalação, será possível executar `vgm2fur` diretamente pelo terminal.
+
+### Desinstalação
+
+Com `pip`:
+
+bash
+
 ```
 pip uninstall vgm2fur
 ```
-or 
+
+Ou com `pipx`:
+
+bash
+
 ```
 pipx uninstall vgm2fur
 ```
-depending on which was used to install.
 
-## Usage
+Utilize o comando correspondente à ferramenta usada durante a instalação.
 
-Suppose you have a VGM file `input.vgm` and you want to convert it to `output.fur` file.
-Said conversion is performed by running a command:
+## Utilização
+
+Suponha que você tenha um arquivo VGM chamado `input.vgm` e queira convertê-lo para `output.fur`.
+
+Execute:
+
+bash
+
 ```
 vgm2fur input.vgm -o output.fur
 ```
 
-Alternatively, command
+Alternativamente, você pode simplesmente executar:
+
+bash
+
 ```
 vgm2fur file.vgm
 ```
-will convert `file.vgm` to `file.fur`.
 
-Input VGM file can be either compressed (`.vgz`) or uncompressed (`.vgm`).
+Nesse caso, o programa converterá automaticamente `file.vgm` para `file.fur`.
 
-You can append to the command one or more following options. `iii` means integer value, `fff` means floating point value.
-- `--pattern-length=iii` - sets Furnace pattern length, in rows (default is 128).
-- `--row-duration=fff` - sets duration of a single Furnace row, in samples (1 sample = 1/44100 sec)
-- `--playback-rate=fff` - sets playback rate in Hz (how many rows will get played per second).
-- `--skip-samples=iii` - skips initial `iii` samples before starting conversion. Can be useful to get rid of silence at start.
-- `--ym2612-volume=fff`, `--sn76489-volume=fff` - sets corresponding chip volume, default is 1
-- `--no-latch` disables YM2612 frequency latching; may be necessary if some FM notes disappear in output Furnace module
+O arquivo VGM de entrada pode estar compactado (`.vgz`) ou descompactado (`.vgm`).
 
-## Limitations
+### Opções disponíveis
 
-At the moment only SEGA Genesis (YM2612 + SN76489) VGM modules are supported, with following limitations:
-- DAC/PCM is partially supported
-- CSM is not supported, program will exit with an error
+Você pode adicionar uma ou mais das seguintes opções ao comando.
 
-## Further development
+`iii` representa um valor inteiro e `fff` representa um valor de ponto flutuante.
 
-I'm currently privately working on a new version of vgm2fur that is expected to be more sustainable and extensible in the long run, so that it can at last support YM2612 DAC completely and bug-free; and then probably more chips. Unfortunately, by the looks of things, it's probably going to take one me or two more years to bring it to the level of capabilities that this version has.
+|Opção|Descrição|
+|---|---|
+|`--pattern-length=iii`|Define o comprimento dos padrões (patterns) do Furnace, em linhas. Padrão: 128.|
+|`--row-duration=fff`|Define a duração de uma linha do Furnace, em amostras (1 amostra = 1/44100 segundo).|
+|`--playback-rate=fff`|Define a taxa de reprodução em Hz (quantas linhas serão reproduzidas por segundo).|
+|`--skip-samples=iii`|Ignora as primeiras `iii` amostras antes de iniciar a conversão. Útil para eliminar o silêncio inicial.|
+|`--ym2612-volume=fff`|Define o volume do chip YM2612. Padrão: 1.|
+|`--sn76489-volume=fff`|Define o volume do chip SN76489. Padrão: 1.|
+|`--no-latch`|Desativa o mecanismo de retenção de frequência (frequency latching) do YM2612. Pode ser necessário quando algumas notas FM desaparecem no módulo gerado.|
 
-This project was developed in a rapid succession while I was on a big vacation. I don't think I can afford as much free time to properly develop this project anymore, without sacrificing the development of other interesting and inspiring projects that I also want to pursue.
+## Conversão em lote
 
-If someone manages to create their own version of vgm2fur that is better than mine, I'll be glad to be relieved from this responsibility - hell, I'll probably even contribute to it, because I like this project. But until then, I can promise I'll keep investing at least an hour of my time a week to vgm2fur ❤️
+O vgm2fur permite converter arquivos individualmente através da linha de comando.  
+Para automatizar a conversão de vários arquivos de uma só vez, disponibilizamos o script `vgm2furs.sh`.
+
+Esse script percorre todos os arquivos `.vgm` presentes no diretório atual e gera automaticamente um módulo `.fur` correspondente para cada arquivo.
+
+### Script `vgm2furs.sh`
+
+bash
+
+```
+#!/bin/bash
+
+for file in *.vgm; do
+    [ -e "$file" ] || continue
+
+    output="${file%.vgm}.fur"
+
+    echo "Convertendo: $file -> $output"
+
+    vgm2fur "$file" -o "$output"
+done
+
+echo "Todas as conversões foram concluídas!"
+```
+
+### Como utilizar
+
+1. Coloque o script `vgm2furs.sh` na pasta que contém os arquivos VGM.
+2. Conceda permissão de execução:
+
+bash
+
+```
+chmod +x vgm2furs.sh
+```
+
+3. Execute:
+
+bash
+
+```
+./vgm2furs.sh
+```
+
+Os módulos `.fur` serão gerados automaticamente na mesma pasta dos arquivos VGM.
+
+**Observação:** o script automatiza a execução individual do conversor para cada arquivo. A conversão em lote é feita pelo próprio script, não por um recurso nativo do vgm2fur.
+
+## Limitações
+
+Atualmente, a versão original oferece suporte apenas a módulos VGM do SEGA Genesis (YM2612 + SN76489), com as seguintes limitações:
+
+- DAC/PCM possui suporte parcial.
+- CSM não é suportado. O programa encerrará a execução com um erro caso encontre esse recurso.
+
+O suporte a outros chips e sistemas depende de futuras implementações.
+
+## Desenvolvimento futuro (Mensagem do criador original)
+
+Atualmente estou trabalhando, de forma privada, em uma nova versão do vgm2fur, que deverá ser mais sustentável e extensível a longo prazo. O objetivo é finalmente oferecer suporte completo e sem bugs ao DAC do YM2612 e, posteriormente, provavelmente adicionar suporte a outros chips.
+
+Infelizmente, pelo que parece, ainda serão necessários mais um ou dois anos de trabalho para que essa nova versão alcance o mesmo nível de funcionalidades da versão atual.
+
+Este projeto foi desenvolvido em um ritmo bastante acelerado durante um longo período de férias. Não acredito que consiga dedicar novamente tanto tempo livre ao desenvolvimento adequado deste projeto sem comprometer o desenvolvimento de outros projetos interessantes e inspiradores que também gostaria de realizar.
+
+Se alguém conseguir criar sua própria versão do vgm2fur e torná-la melhor que a minha, ficarei muito feliz em deixar essa responsabilidade para outra pessoa. Aliás, provavelmente até contribuirei com o projeto, porque gosto muito dele.
+
+Mas, até que isso aconteça, posso prometer que continuarei dedicando pelo menos uma hora por semana ao vgm2fur. ❤️
+
+## Continuidade do projeto e contribuições (Fork)
+
+Este repositório é um fork independente, mantido por mim, com o objetivo de dar continuidade ao legado do desenvolvedor original e preservar o excelente trabalho realizado na criação do vgm2fur.
+
+Minha intenção é manter o projeto vivo, ampliar suas funcionalidades e expandir o suporte a diferentes chips de áudio e sistemas.
+
+Gostaria também de convidar outros desenvolvedores, músicos e entusiastas a participarem dessa iniciativa!
+
+Contribuições são muito bem-vindas, especialmente para:
+
+- Desenvolver novos módulos de conversão para diferentes chips de áudio.
+- Adicionar suporte a mais sistemas e plataformas de videogames.
+- Melhorar a precisão das conversões e a reprodução das características originais de cada chip.
+- Corrigir bugs e aprimorar os módulos existentes.
+- Expandir a compatibilidade com diferentes formatos e recursos de áudio.
+- Melhorar a documentação, os testes e a manutenção do projeto.
+
+O objetivo é construir uma ferramenta cada vez mais completa, capaz de converter músicas de diferentes sistemas e plataformas para módulos do Furnace Tracker, preservando suas características sonoras com a maior fidelidade possível.
+
+Toda contribuição, seja com código, testes, documentação, sugestões ou ideias, será muito bem-vinda.
+
+**Vamos continuar esse legado juntos! ❤️**
+
+## Agradecimentos
+
+Um agradecimento especial ao desenvolvedor original (Alexander Shokhin) pela criação do vgm2fur e por todo o trabalho que tornou este projeto possível.
+
+Este fork busca reconhecer e preservar esse trabalho, dando continuidade ao desenvolvimento e abrindo espaço para que mais pessoas possam contribuir com sua evolução.
